@@ -25,6 +25,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * This class simulate health data for multiple patients.
+ * It generate different type of medical data like ECG, blood pressure and alerts.
+ * The program run tasks in parallel using a scheduler.
+ *
+ * It also allow user to choose output type (console, file, tcp, websocket).
+ */
 public class HealthDataSimulator {
 
     private static int patientCount = 50; // Default number of patients
@@ -32,6 +39,13 @@ public class HealthDataSimulator {
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
 
+    /**
+     * Main method of the program.
+     * It start the simulator and schedule tasks for all patients.
+     *
+     * @param args command line arguments for configuration
+     * @throws IOException if error happen when creating directories
+     */
     public static void main(String[] args) throws IOException {
 
         parseArguments(args);
@@ -43,6 +57,13 @@ public class HealthDataSimulator {
 
         scheduleTasksForPatients(patientIds);
     }
+
+    /**
+     * Parse command line arguments and configure the simulator.
+     *
+     * @param args input arguments from user
+     * @throws IOException if directory creation fail
+     */
 
     private static void parseArguments(String[] args) throws IOException {
         for (int i = 0; i < args.length; i++) {
@@ -57,7 +78,8 @@ public class HealthDataSimulator {
                             patientCount = Integer.parseInt(args[++i]);
                         } catch (NumberFormatException e) {
                             System.err
-                                    .println("Error: Invalid number of patients. Using default value: " + patientCount);
+                                    .println("Error: Invalid number of patients. Using default value: "
+                                            + patientCount);
                         }
                     }
                     break;
@@ -67,16 +89,14 @@ public class HealthDataSimulator {
                         if (outputArg.equals("console")) {
                             outputStrategy = new ConsoleOutputStrategy();
                         } else if (outputArg.startsWith("file:")) {
-                            String baseDirectory = outputArg.substring(5);
-                            Path outputPath = Paths.get(baseDirectory);
+                            String baseDirectory = outputArg.substring(5);                                Path outputPath = Paths.get(baseDirectory);
                             if (!Files.exists(outputPath)) {
                                 Files.createDirectories(outputPath);
                             }
                             outputStrategy = new FileOutputStrategy(baseDirectory);
                         } else if (outputArg.startsWith("websocket:")) {
                             try {
-                                int port = Integer.parseInt(outputArg.substring(10));
-                                // Initialize your WebSocket output strategy here
+                                int port = Integer.parseInt(outputArg.substring(10));                                    // Initialize your WebSocket output strategy here
                                 outputStrategy = new WebSocketOutputStrategy(port);
                                 System.out.println("WebSocket output will be on port: " + port);
                             } catch (NumberFormatException e) {
@@ -90,7 +110,8 @@ public class HealthDataSimulator {
                                 outputStrategy = new TcpOutputStrategy(port);
                                 System.out.println("TCP socket output will be on port: " + port);
                             } catch (NumberFormatException e) {
-                                System.err.println("Invalid port for TCP output. Please specify a valid port number.");
+                                System.err.println(
+                                        "Invalid port for TCP output. Please specify a valid port number.");
                             }
                         } else {
                             System.err.println("Unknown output type. Using default (console).");
@@ -104,6 +125,10 @@ public class HealthDataSimulator {
             }
         }
     }
+
+    /**
+     * Print help message to explain how to use the program.
+     */
 
     private static void printHelp() {
         System.out.println("Usage: java HealthDataSimulator [options]");
@@ -121,14 +146,27 @@ public class HealthDataSimulator {
         System.out.println(
                 "  This command simulates data for 100 patients and sends the output to WebSocket clients connected to port 8080.");
     }
+    
+    /**
+     * Create a list of patient IDs.
+     *
+     * @param patientCount number of patients
+     * @return list of patient IDs
+     */
 
-    private static List<Integer> initializePatientIds(int patientCount) {
-        List<Integer> patientIds = new ArrayList<>();
-        for (int i = 1; i <= patientCount; i++) {
-            patientIds.add(i);
+        private static List<Integer> initializePatientIds(int patientCount) {
+            List<Integer> patientIds = new ArrayList<>();
+            for (int i = 1; i <= patientCount; i++) {
+                patientIds.add(i);
+            }
+            return patientIds;
         }
-        return patientIds;
-    }
+    
+    /**
+     * Schedule all tasks for each patient.
+     *
+     * @param patientIds list of patient IDs
+     */
 
     private static void scheduleTasksForPatients(List<Integer> patientIds) {
         ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount);
@@ -145,6 +183,14 @@ public class HealthDataSimulator {
             scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
     }
+
+    /**
+     * Schedule a repeating task.
+     *
+     * @param task the task to execute
+     * @param period time between executions
+     * @param timeUnit unit of time
+     */
 
     private static void scheduleTask(Runnable task, long period, TimeUnit timeUnit) {
         scheduler.scheduleAtFixedRate(task, random.nextInt(5), period, timeUnit);
