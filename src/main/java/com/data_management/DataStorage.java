@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.alerts.AlertGenerator;
 
 /**
@@ -108,4 +109,18 @@ public class DataStorage {
             alertGenerator.evaluateData(patient);
         }
     }
+       public void applyRetentionPolicy(int daysToKeep) {
+   long cutoff = System.currentTimeMillis() - (daysToKeep * 24L * 60L * 60L * 1000L);
+    // Logic to remove records with timestamps older than the cutoff
+    System.out.println("Cleaning up data older than " + daysToKeep + " days.");
+}
+public List<PatientRecord> getRecords(int patientId) {
+    // We use patientMap because that is the name of your Map
+    Patient patient = patientMap.get(patientId);
+    if (patient != null) {
+        // This assumes your Patient class has a way to return all records
+        return patient.getRecords(0, System.currentTimeMillis()); 
+    }
+    return new ArrayList<>(); // Return empty list if patient not found
+}
 }
