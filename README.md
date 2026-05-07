@@ -78,3 +78,43 @@ They include:
 - Data Access Layer
 
 The directory also includes `Rationale.txt`, which explains the design choices and responsibilities of all the subsystem.
+
+## Testing
+
+This project uses JUnit 5 for unit testing.
+
+To run all tests:
+
+```bash
+mvn clean test
+```
+
+To generate the coverage report:
+
+```bash
+mvn package
+```
+
+The JaCoCo report is generated in:
+
+```text
+target/site/jacoco/index.html
+```
+
+Current tests include:
+- AlertGenerator
+- Alert
+- DataStorage
+- FileDataReader
+- Patient
+- PatientRecord
+
+## Part 3 Screenshots
+
+### Test Results
+
+![Test Results](screenshots/part3/test-success-part3.png)
+
+### JaCoCo Coverage Report
+
+![JaCoCo Report](screenshots/part3/jacoco-report-part3.png)
