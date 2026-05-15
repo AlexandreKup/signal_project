@@ -1,4 +1,4 @@
-package com.alerts;
+package com.alerts.strategies;
 
 import java.util.List;
 

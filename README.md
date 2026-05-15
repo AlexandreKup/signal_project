@@ -1,6 +1,7 @@
 # Cardio Data Simulator
 
-The Cardio Data Simulator is a Java-based application designed to simulate real-time cardiovascular data for multiple patients. This tool is particularly useful for educational purposes, enabling students to interact with real-time data streams of ECG, blood pressure, blood saturation, and other cardiovascular signals.
+The Cardio Data Simulator is a program that runs on Java. It is used to make cardiovascular data for many patients. This tool is really helpful when we are learning. It lets students work with real time data from things like ECG and blood pressure. They can also see things like blood saturation and other signals that have to do with the heart. The Cardio Data Simulator is very good, for purposes.
+
 
 ## Features
 
@@ -11,6 +12,13 @@ The Cardio Data Simulator is a Java-based application designed to simulate real-
   - WebSocket and TCP output for networked data streaming.
 - Configurable patient count and data generation rate.
 - Randomized patient ID assignment for simulated data diversity.
+
+## Design Patterns (Part 4)
+The architecture utilizes several behavioral and creational design patterns to ensure clinical-grade reliability and modularity:
+- Singleton: Ensures global state management for the `DataStorage` and `HealthDataSimulator`.
+- Strategy: Decouples specific health metric analysis logic (ECG, BP, Oxygen) from the generator.
+- Factory Method: Handles the type-safe creation of specialized medical alerts.
+- Decorator: Allows for the dynamic extension of alerts with priority and repetition logic.
 
 ## Getting Started
 

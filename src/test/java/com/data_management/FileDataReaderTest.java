@@ -1,13 +1,12 @@
 package com.data_management;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 class FileDataReaderTest {
@@ -24,7 +23,7 @@ class FileDataReaderTest {
             writer.write("1,95.5,BloodSaturation,2000\n");
         }
 
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         FileDataReader reader = new FileDataReader(tempDirectory.getPath());
 
         reader.readData(storage);
@@ -41,7 +40,7 @@ class FileDataReaderTest {
 
     @Test
     void testInvalidDirectoryThrowsIOException() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         FileDataReader reader = new FileDataReader("directory_that_does_not_exist");
 
         assertThrows(IOException.class, () -> reader.readData(storage));

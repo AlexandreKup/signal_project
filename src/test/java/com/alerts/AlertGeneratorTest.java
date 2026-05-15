@@ -1,7 +1,6 @@
 package com.alerts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import com.data_management.DataStorage;
@@ -11,8 +10,7 @@ class AlertGeneratorTest {
 
     @Test
     void testLowBloodSaturationAlert() {
-        DataStorage storage = new DataStorage();
-
+        DataStorage storage = DataStorage.getInstance();
         Patient patient = new Patient(1);
         patient.addRecord(89.0, "BloodSaturation", 1000L);
 
@@ -28,7 +26,7 @@ class AlertGeneratorTest {
 
     @Test
     void testCriticalSystolicBloodPressureAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(2);
         patient.addRecord(185.0, "SystolicBloodPressure", 2000L);
@@ -45,7 +43,7 @@ class AlertGeneratorTest {
 
     @Test
     void testNoAlertTriggered() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(3);
         patient.addRecord(98.0, "BloodSaturation", 3000L);
@@ -59,7 +57,7 @@ class AlertGeneratorTest {
 
     @Test
     void testRapidBloodOxygenDropAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(4);
 
@@ -88,7 +86,7 @@ class AlertGeneratorTest {
     
     @Test
     void testHypotensiveHypoxemiaAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(5);
 
@@ -117,7 +115,7 @@ class AlertGeneratorTest {
     
     @Test
     void testSystolicBloodPressureIncreasingTrendAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(6);
 
@@ -140,7 +138,7 @@ class AlertGeneratorTest {
     
     @Test
     void testSystolicBloodPressureDecreasingTrendAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(7);
 
@@ -163,7 +161,7 @@ class AlertGeneratorTest {
     
     @Test
     void testAbnormalEcgAlert() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(8);
 
