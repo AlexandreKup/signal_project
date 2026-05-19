@@ -1,7 +1,6 @@
 # Cardio Data Simulator
 
-The Cardio Data Simulator is a program that runs on Java. It is used to make cardiovascular data for many patients. This tool is really helpful when we are learning. It lets students work with real time data from things like ECG and blood pressure. They can also see things like blood saturation and other signals that have to do with the heart. The Cardio Data Simulator is very good, for purposes.
-
+The Cardio Data Simulator is a program that runs on Java. It is used to generate cardiovascular data for many patients. This tool is really helpful when we are learning. It lets students work with real time data from things like ECG and blood pressure. They can also see things like blood saturation and other signals that have to do with the heart.
 
 ## Features
 
@@ -14,7 +13,9 @@ The Cardio Data Simulator is a program that runs on Java. It is used to make car
 - Randomized patient ID assignment for simulated data diversity.
 
 ## Design Patterns (Part 4)
-The architecture utilizes several behavioral and creational design patterns to ensure clinical-grade reliability and modularity:
+
+The architecture utilizes several behavioral and creational design patterns to ensure modularity:
+
 - Singleton: Ensures global state management for the `DataStorage` and `HealthDataSimulator`.
 - Strategy: Decouples specific health metric analysis logic (ECG, BP, Oxygen) from the generator.
 - Factory Method: Handles the type-safe creation of specialized medical alerts.
@@ -45,20 +46,22 @@ The architecture utilizes several behavioral and creational design patterns to e
    ```sh
    mvn clean package
    ```
-   This step compiles the source code and packages the application into an executable JAR file located in the `target/` directory.
+   This step compiles the source code and creates the project JAR located in the `target/` directory.
 
 ### Running the Simulator
 
-After packaging, you can run the simulator directly from the executable JAR:
+The simulator should be started using Maven.
+
+Default execution:
 
 ```sh
-java -jar target/cardio_generator-1.0-SNAPSHOT.jar
+mvn exec:java "-Dexec.mainClass=com.cardio_generator.HealthDataSimulator"
 ```
 
 To run with specific options (e.g., to set the patient count and choose an output strategy):
 
 ```sh
-java -jar target/cardio_generator-1.0-SNAPSHOT.jar --patient-count 100 --output file:./output
+mvn exec:java "-Dexec.mainClass=com.cardio_generator.HealthDataSimulator" "-Dexec.args=--patient-count 100 --output file:./output"
 ```
 
 ### Supported Output Options
@@ -85,7 +88,7 @@ They include:
 - Patient Identification System
 - Data Access Layer
 
-The directory also includes `Rationale.txt`, which explains the design choices and responsibilities of all the subsystem.
+The directory also includes `Rationale.txt`, which explains the design choices and responsibilities of all the subsystems.
 
 ## Testing
 
@@ -116,13 +119,93 @@ Current tests include:
 - FileDataReader
 - Patient
 - PatientRecord
+- AlertFactory
+- Strategy classes
+- WebSocketDataReader
+- Singleton implementation
+
+Current result:
+
+```text
+22 tests passed
+0 failures
+BUILD SUCCESS
+```
 
 ## Part 3 Screenshots
 
 ### Test Results
 
-![Test Results](screenshots/part3/test-success-part3.png)
+```text
+screenshots/Part 3/
+```
 
-### JaCoCo Coverage Report
+## Part 4 Screenshots
 
-![JaCoCo Report](screenshots/part3/jacoco-report-part3.png)
+Screenshots are available in:
+
+```text
+screenshots/Part 4/
+```
+
+## Part 5 - Real-Time WebSocket Data Reader
+
+A WebSocket client was added for Part 5.
+
+Implemented classes:
+
+- `WebSocketDataReader`
+- `WebSocketReaderMain`
+
+Features:
+
+- Connects to a WebSocket server
+- Receives live patient data
+- Parses incoming WebSocket messages
+- Stores valid patient records in `DataStorage`
+- Ignores invalid or corrupted messages to prevent crashes
+
+Expected WebSocket message format:
+
+```text
+patientId,timestamp,label,data
+```
+
+Examples:
+
+```text
+1,1779200135840,HeartRate,85
+1,1779200135840,Saturation,93.0%
+```
+
+### Real-Time Integration Test
+
+The WebSocket implementation was tested successfully with the live simulator.
+
+Start simulator:
+
+```bash
+mvn exec:java "-Dexec.mainClass=com.cardio_generator.HealthDataSimulator" "-Dexec.args=--output websocket:8080"
+```
+
+Start WebSocket reader in a second terminal:
+
+```bash
+mvn exec:java "-Dexec.mainClass=com.data_management.WebSocketReaderMain"
+```
+
+Live patient records were received and stored successfully.
+
+## Part 5 Screenshots
+
+Screenshots are available in:
+
+```text
+screenshots/Part 5/
+```
+
+Including:
+
+- Live WebSocket connection
+- Real-time patient data reception
+- Test validation
