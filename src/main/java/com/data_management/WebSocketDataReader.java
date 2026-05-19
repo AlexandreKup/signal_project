@@ -75,7 +75,14 @@ public class WebSocketDataReader implements DataReader {
         }
     }
 
-    private void parseMessage(String message, DataStorage dataStorage) {
+    /**
+     * Parses one WebSocket message and stores it.
+     * Invalid messages are ignored.
+     *
+     * @param message the message received from the WebSocket server
+     * @param dataStorage the storage where valid records are saved
+     */
+    public void parseMessage(String message, DataStorage dataStorage) {
         String[] parts = message.split(",");
 
         if (parts.length != 4) {
