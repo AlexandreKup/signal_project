@@ -94,9 +94,11 @@ public class WebSocketDataReader implements DataReader {
             int patientId = Integer.parseInt(parts[0].trim());
             long timestamp = Long.parseLong(parts[1].trim());
             String recordType = parts[2].trim();
-            double measurementValue = Double.parseDouble(parts[3].trim());
+            double measurementValue = Double.parseDouble(parts[3].trim().replace("%", ""));
 
             dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
+            System.out.println("Stored WebSocket record: patient "
+                + patientId + ", " + recordType + " = " + measurementValue);
 
         } catch (NumberFormatException exception) {
             System.err.println("Corrupted WebSocket message ignored: " + message);
