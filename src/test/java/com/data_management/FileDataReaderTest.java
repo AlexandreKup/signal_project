@@ -19,8 +19,8 @@ class FileDataReaderTest {
         File tempFile = new File(tempDirectory, "patient_data.txt");
 
         try (FileWriter writer = new FileWriter(tempFile)) {
-            writer.write("1,80.0,HeartRate,1000\n");
-            writer.write("1,95.5,BloodSaturation,2000\n");
+            writer.write("Patient ID: 1, Timestamp: 1000, Label: HeartRate, Data: 80.0\n");
+            writer.write("Patient ID: 1, Timestamp: 2000, Label: BloodSaturation, Data: 95.5\n");
         }
 
         DataStorage storage = DataStorage.getInstance();

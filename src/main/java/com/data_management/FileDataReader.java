@@ -22,10 +22,10 @@ public class FileDataReader implements DataReader {
     }
 
     /**
-     * It reads all files in the directory and it adds valid patient records to the storage.
+     * Reads all files in the directory and adds valid patient records to the storage.
      *
-     * This is the expected format per line:
-     * patientId,measurementValue,recordType,timestamp
+     * Expected simulator format:
+     * Patient ID: 1, Timestamp: 12345, Label: ECG, Data: 80.0
      *
      * @param dataStorage the storage where parsed records are saved
      * @throws IOException if files cannot be read
@@ -69,14 +69,14 @@ public class FileDataReader implements DataReader {
         }
 
         try {
-            int patientId = Integer.parseInt(parts[0].trim());
-            double measurementValue = Double.parseDouble(parts[1].trim());
-            String recordType = parts[2].trim();
-            long timestamp = Long.parseLong(parts[3].trim());
+            int patientId = Integer.parseInt(parts[0].split(":")[1].trim());
+            long timestamp = Long.parseLong(parts[1].split(":")[1].trim());
+            String recordType = parts[2].split(":")[1].trim();
+            double measurementValue = Double.parseDouble(parts[3].split(":")[1].trim());
 
             dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
-        } catch (NumberFormatException exception) {
-            // Invalid lines arre ignored because the simulator output could contain not valid data.
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
+            // Invalid lines must be ignored because teh output may have corrupted data.
         }
     }
 }
