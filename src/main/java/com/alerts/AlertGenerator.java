@@ -3,6 +3,11 @@ package com.alerts;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
+import com.alerts.decorators.PriorityAlertDecorator;
+import com.alerts.decorators.RepeatedAlertDecorator;
+import com.alerts.factories.BloodOxygenAlertFactory;
+import com.alerts.factories.BloodPressureAlertFactory;
+import com.alerts.factories.ECGAlertFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +23,10 @@ public class AlertGenerator {
     private final DataStorage dataStorage;
     private List<Alert> triggeredAlerts;
 
+    private final BloodOxygenAlertFactory bloodOxygenAlertFactory;
+    private final BloodPressureAlertFactory bloodPressureAlertFactory;
+    private final ECGAlertFactory ecgAlertFactory;
+
     /**
      * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
      * The {@code DataStorage} is used to retrieve patient data that this class
@@ -29,6 +38,9 @@ public class AlertGenerator {
     public AlertGenerator(DataStorage dataStorage) {
         this.dataStorage = dataStorage;
         this.triggeredAlerts = new ArrayList<>();
+        this.bloodOxygenAlertFactory = new BloodOxygenAlertFactory();
+        this.bloodPressureAlertFactory = new BloodPressureAlertFactory();
+        this.ecgAlertFactory = new ECGAlertFactory();
     }
 
     /**
@@ -61,25 +73,25 @@ public class AlertGenerator {
             if (recordType.equalsIgnoreCase("BloodSaturation")
                     && value < 92.0) {
 
-                triggerAlert(new Alert(
-                        String.valueOf(patient.getPatientId()),
-                        "Low blood oxygen saturation",
-                        record.getTimestamp()));
+                triggerAlert(bloodOxygenAlertFactory.createAlert(
+                    String.valueOf(patient.getPatientId()),
+                    "Low blood oxygen saturation",
+                    record.getTimestamp()));
             }
 
             if (recordType.equalsIgnoreCase("SystolicBloodPressure")
                     && (value > 180.0 || value < 90.0)) {
 
-                triggerAlert(new Alert(
-                        String.valueOf(patient.getPatientId()),
-                        "Critical systolic blood pressure",
-                        record.getTimestamp()));
+                triggerAlert(bloodPressureAlertFactory.createAlert(
+                    String.valueOf(patient.getPatientId()),
+                    "Critical systolic blood pressure",
+                    record.getTimestamp()));
             }
 
             if (recordType.equalsIgnoreCase("DiastolicBloodPressure")
                     && (value > 120.0 || value < 60.0)) {
 
-                triggerAlert(new Alert(
+                triggerAlert(bloodPressureAlertFactory.createAlert(
                         String.valueOf(patient.getPatientId()),
                         "Critical diastolic blood pressure",
                         record.getTimestamp()));
@@ -102,7 +114,20 @@ public class AlertGenerator {
      * @param alert the alert object containing details about the alert condition
      */
     private void triggerAlert(Alert alert) {
-        triggeredAlerts.add(alert);
+        Alert decoratedAlert = alert;
+
+        if (alert.getCondition().contains("Critical")
+                || alert.getCondition().contains("Hypotensive")
+                || alert.getCondition().contains("ECG")) {
+            decoratedAlert = new PriorityAlertDecorator(alert, "HIGH");
+        }
+
+        if (alert.getCondition().contains("trend")
+                || alert.getCondition().contains("Rapid")) {
+            decoratedAlert = new RepeatedAlertDecorator(alert);
+        }
+
+        triggeredAlerts.add(decoratedAlert);
     }
 
 
@@ -279,11 +304,10 @@ public class AlertGenerator {
             PatientRecord currentRecord = ecgRecords.get(i);
 
             if (currentRecord.getMeasurementValue() > average * peakMultiplier) {
-                triggerAlert(new Alert(
+                triggerAlert(ecgAlertFactory.createAlert(
                         String.valueOf(patient.getPatientId()),
                         "Abnormal ECG peak",
                         currentRecord.getTimestamp()));
-                return;
             }
         }
     }

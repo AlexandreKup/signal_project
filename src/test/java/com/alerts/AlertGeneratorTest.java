@@ -20,7 +20,7 @@ class AlertGeneratorTest {
 
         assertEquals(1, generator.getTriggeredAlerts().size());
         assertEquals(
-                "Low blood oxygen saturation",
+                "Blood Oxygen Alert: Low blood oxygen saturation",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
 
@@ -37,7 +37,7 @@ class AlertGeneratorTest {
 
         assertEquals(1, generator.getTriggeredAlerts().size());
         assertEquals(
-                "Critical systolic blood pressure",
+                "Blood Pressure Alert: Critical systolic blood pressure",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
 
@@ -183,7 +183,7 @@ class AlertGeneratorTest {
                 generator.getTriggeredAlerts().size());
 
         assertEquals(
-                "Abnormal ECG peak",
+                "ECG Alert: Abnormal ECG peak",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
 
