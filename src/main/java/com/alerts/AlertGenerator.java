@@ -49,6 +49,15 @@ public class AlertGenerator {
             String recordType = record.getRecordType();
             double value = record.getMeasurementValue();
 
+            if (recordType.equalsIgnoreCase("TriggeredAlert")
+                    && value == 1.0) {
+
+                triggerAlert(new Alert(
+                        String.valueOf(patient.getPatientId()),
+                        "Manual triggered alert",
+                        record.getTimestamp()));
+            }
+
             if (recordType.equalsIgnoreCase("BloodSaturation")
                     && value < 92.0) {
 

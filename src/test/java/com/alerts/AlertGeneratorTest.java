@@ -186,4 +186,28 @@ class AlertGeneratorTest {
                 "Abnormal ECG peak",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
+
+    @Test
+    void testManualTriggeredAlert() {
+        DataStorage storage = DataStorage.getInstance();
+
+        Patient patient = new Patient(9);
+
+        patient.addRecord(
+                1.0,
+                "TriggeredAlert",
+                1000L);
+
+        AlertGenerator generator = new AlertGenerator(storage);
+
+        generator.evaluateData(patient);
+
+        assertEquals(
+                1,
+                generator.getTriggeredAlerts().size());
+
+        assertEquals(
+                "Manual triggered alert",
+                generator.getTriggeredAlerts().get(0).getCondition());
+    }
 }
