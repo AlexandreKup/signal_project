@@ -83,7 +83,7 @@ class AlertGeneratorTest {
                 "Rapid blood oxygen saturation drop",
                 generator.getTriggeredAlerts().get(1).getCondition());
     }
-    
+
     @Test
     void testHypotensiveHypoxemiaAlert() {
         DataStorage storage = DataStorage.getInstance();
@@ -112,7 +112,7 @@ class AlertGeneratorTest {
                 "Hypotensive hypoxemia",
                 generator.getTriggeredAlerts().get(2).getCondition());
     }
-    
+
     @Test
     void testSystolicBloodPressureIncreasingTrendAlert() {
         DataStorage storage = DataStorage.getInstance();
@@ -135,7 +135,7 @@ class AlertGeneratorTest {
                 "Systolic blood pressure trend",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
-    
+
     @Test
     void testSystolicBloodPressureDecreasingTrendAlert() {
         DataStorage storage = DataStorage.getInstance();
@@ -158,17 +158,23 @@ class AlertGeneratorTest {
                 "Systolic blood pressure trend",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
-    
+
     @Test
     void testAbnormalEcgAlert() {
         DataStorage storage = DataStorage.getInstance();
 
         Patient patient = new Patient(8);
 
-        patient.addRecord(170.0, "ECG", 1000L);
+        patient.addRecord(80.0, "ECG", 1000L);
+        patient.addRecord(82.0, "ECG", 2000L);
+        patient.addRecord(79.0, "ECG", 3000L);
+        patient.addRecord(81.0, "ECG", 4000L);
+        patient.addRecord(80.0, "ECG", 5000L);
 
-        AlertGenerator generator =
-                new AlertGenerator(storage);
+        // This value is much higher than the average of the previous 5 ECG values.
+        patient.addRecord(170.0, "ECG", 6000L);
+
+        AlertGenerator generator = new AlertGenerator(storage);
 
         generator.evaluateData(patient);
 
@@ -180,5 +186,4 @@ class AlertGeneratorTest {
                 "Abnormal ECG peak",
                 generator.getTriggeredAlerts().get(0).getCondition());
     }
-
 }

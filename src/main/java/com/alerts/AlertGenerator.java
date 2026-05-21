@@ -76,19 +76,12 @@ public class AlertGenerator {
                         record.getTimestamp()));
             }
 
-            if (recordType.equalsIgnoreCase("ECG")
-                && (value > 150.0 || value < 40.0)) {
-
-                triggerAlert(new Alert(
-                        String.valueOf(patient.getPatientId()),
-                        "Abnormal ECG peak",
-                        record.getTimestamp()));
-            }
         }
 
         checkRapidOxygenDrop(patient, records);
         checkHypotensiveHypoxemia(patient, records);
         checkBloodPressureTrend(patient, records);
+        checkEcgPeak(patient, records);
 
     }
 
@@ -229,16 +222,12 @@ public class AlertGenerator {
             PatientRecord second = bloodPressureRecords.get(i + 1);
             PatientRecord third = bloodPressureRecords.get(i + 2);
 
-            double firstChange =
-                    second.getMeasurementValue() - first.getMeasurementValue();
-            double secondChange =
-                    third.getMeasurementValue() - second.getMeasurementValue();
+            double firstChange = second.getMeasurementValue() - first.getMeasurementValue();
+            double secondChange = third.getMeasurementValue() - second.getMeasurementValue();
 
-            boolean increasingTrend =
-                    firstChange > 10.0 && secondChange > 10.0;
+            boolean increasingTrend = firstChange > 10.0 && secondChange > 10.0;
 
-            boolean decreasingTrend =
-                    firstChange < -10.0 && secondChange < -10.0;
+            boolean decreasingTrend = firstChange < -10.0 && secondChange < -10.0;
 
             if (increasingTrend || decreasingTrend) {
                 triggerAlert(new Alert(
@@ -250,6 +239,45 @@ public class AlertGenerator {
         }
     }
 
+    /**
+     * Checks ECG records using a sliding window average.
+     * An alert is triggered if one ECG value is much higher than
+     * the average of the previous ECG values.
+     *
+     * @param patient the patient to check
+     * @param records the records of the patient
+     */
+    private void checkEcgPeak(Patient patient, List<PatientRecord> records) {
+        final int windowSize = 5;
+        final double peakMultiplier = 1.5;
+
+        List<PatientRecord> ecgRecords = new ArrayList<>();
+
+        for (PatientRecord record : records) {
+            if (record.getRecordType().equalsIgnoreCase("ECG")) {
+                ecgRecords.add(record);
+            }
+        }
+
+        for (int i = windowSize; i < ecgRecords.size(); i++) {
+            double sum = 0.0;
+
+            for (int j = i - windowSize; j < i; j++) {
+                sum += ecgRecords.get(j).getMeasurementValue();
+            }
+
+            double average = sum / windowSize;
+            PatientRecord currentRecord = ecgRecords.get(i);
+
+            if (currentRecord.getMeasurementValue() > average * peakMultiplier) {
+                triggerAlert(new Alert(
+                        String.valueOf(patient.getPatientId()),
+                        "Abnormal ECG peak",
+                        currentRecord.getTimestamp()));
+                return;
+            }
+        }
+    }
 
     /**
      * Returns all alerts triggered during evaluation.
